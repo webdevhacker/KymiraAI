@@ -35,6 +35,10 @@ export interface IUser extends Document {
   isTwoFactorEnabled: boolean;
   twoFactorSecret?: string;
   
+  // Account Deletion
+  deleteAccountOtp?: string;
+  deleteAccountExpires?: Date;
+  
   // Active Sessions
   sessions: ISession[];
   
@@ -76,6 +80,9 @@ const UserSchema = new Schema<IUser>(
     resetPasswordOtp: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
     
+    deleteAccountOtp: { type: String, select: false },
+    deleteAccountExpires: { type: Date, select: false },
+    
     isTwoFactorEnabled: { type: Boolean, default: false },
     twoFactorSecret: { type: String, select: false },
     
@@ -100,6 +107,8 @@ UserSchema.methods.toJSON = function () {
   delete obj.emailVerificationExpires;
   delete obj.resetPasswordOtp;
   delete obj.resetPasswordExpires;
+  delete obj.deleteAccountOtp;
+  delete obj.deleteAccountExpires;
   return obj;
 };
 

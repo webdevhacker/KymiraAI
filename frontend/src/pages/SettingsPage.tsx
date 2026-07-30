@@ -23,6 +23,11 @@ const SettingsPage: React.FC = () => {
   const [twoFaCode, setTwoFaCode] = useState('');
   const [is2FAEnabled, setIs2FAEnabled] = useState(user?.isTwoFactorEnabled || false);
 
+  // Delete Account State
+  const [deleteStep, setDeleteStep] = useState<'idle' | 'verify'>('idle');
+  const [deleteOtp, setDeleteOtp] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   // Sessions State
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
@@ -104,7 +109,35 @@ const SettingsPage: React.FC = () => {
       setQrCode('');
       setTwoFaCode('');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Invalid code');
+      toast.error(err.response?.data?.message || 'Verification failed');
+    }
+  };
+
+  const handleRequestDeleteAccount = async () => {
+    try {
+      setDeleteLoading(true);
+      const res = await userApi.requestDeleteAccount();
+      toast.success(res.message);
+      setDeleteStep('verify');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to send OTP');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleVerifyDeleteAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setDeleteLoading(true);
+      const res = await userApi.verifyDeleteAccount(deleteOtp);
+      toast.success(res.message);
+      setTimeout(() => {
+        window.location.href = '/auth';
+      }, 1500);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Verification failed');
+      setDeleteLoading(false);
     }
   };
 
@@ -134,7 +167,7 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="settings-layout">
       <div className="settings-sidebar">
-        <Link to="/" className="settings-back-link">← Back to Chat</Link>
+        <Link to="/chat" className="settings-back-link">← Back to Chat</Link>
         <h1 className="settings-title">Settings</h1>
         
         <nav className="settings-nav">
@@ -204,6 +237,41 @@ const SettingsPage: React.FC = () => {
                     {passwordLoading ? 'Verifying...' : 'Change Password'}
                   </button>
                   <button type="button" className="btn btn-secondary" onClick={() => setPasswordStep('idle')}>Cancel</button>
+                </div>
+              </form>
+            )}
+
+            <hr className="settings-divider" style={{ marginTop: 40, borderColor: 'rgba(244, 63, 94, 0.2)' }} />
+
+            <h2 className="settings-section-title" style={{ color: 'var(--accent-rose)' }}>Danger Zone</h2>
+            {deleteStep === 'idle' ? (
+              <div>
+                <p style={{ color: 'var(--text-muted)', marginBottom: 20, fontSize: 14 }}>
+                  Permanently delete your account and all associated data. This action is irreversible. We will send an OTP to <strong>{user?.email}</strong> to verify this action.
+                </p>
+                <button 
+                  onClick={handleRequestDeleteAccount} 
+                  disabled={deleteLoading}
+                  className="btn"
+                  style={{ background: 'rgba(244, 63, 94, 0.1)', color: 'var(--accent-rose)', border: '1px solid rgba(244, 63, 94, 0.3)' }}
+                >
+                  {deleteLoading ? 'Sending OTP...' : 'Delete Account'}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleVerifyDeleteAccount}>
+                <p style={{ color: 'var(--text-muted)', marginBottom: 20, fontSize: 14 }}>
+                  Enter the OTP sent to your email to confirm account deletion.
+                </p>
+                <div className="form-group" style={{ marginBottom: 15 }}>
+                  <label className="form-label" style={{ color: 'var(--accent-rose)' }}>Delete OTP</label>
+                  <input className="form-input" value={deleteOtp} onChange={e => setDeleteOtp(e.target.value)} required placeholder="6-digit code" />
+                </div>
+                <div className="settings-btn-group">
+                  <button type="submit" className="btn" style={{ background: 'var(--accent-rose)', color: '#fff' }} disabled={deleteLoading}>
+                    {deleteLoading ? 'Deleting...' : 'Confirm Deletion'}
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={() => setDeleteStep('idle')}>Cancel</button>
                 </div>
               </form>
             )}

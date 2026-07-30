@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
 import AuthPage from './pages/AuthPage';
 import ChatPage from './pages/ChatPage';
+import LandingPage from './pages/LandingPage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
@@ -59,9 +60,10 @@ const App: React.FC = () => (
     />
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route
-          path="/"
+          path="/chat"
           element={
             <PrivateRoute>
               <ChatProvider>

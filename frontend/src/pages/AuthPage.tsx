@@ -29,7 +29,7 @@ const AuthPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  if (isAuthenticated) return <Navigate to="/" replace />;
+  if (isAuthenticated) return <Navigate to="/chat" replace />;
 
   const handleLogin = async () => {
     const res = await authApi.login(email, password);

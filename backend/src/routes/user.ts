@@ -8,7 +8,9 @@ import {
   verifyAndEnable2FA, 
   disable2FA,
   requestPasswordChange,
-  verifyPasswordChange
+  verifyPasswordChange,
+  requestAccountDeletion,
+  verifyAccountDeletion
 } from '../controllers/userController';
 import { requireAuth } from '../middleware/auth';
 
@@ -28,5 +30,8 @@ router.delete('/sessions/:tokenId', revokeSession);
 router.post('/2fa/generate', generate2FA);
 router.post('/2fa/verify', verifyAndEnable2FA);
 router.post('/2fa/disable', disable2FA);
+
+router.post('/delete-request', requestAccountDeletion);
+router.post('/delete-verify', verifyAccountDeletion);
 
 export default router;

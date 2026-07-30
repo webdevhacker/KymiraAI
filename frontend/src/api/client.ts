@@ -24,7 +24,8 @@ apiClient.interceptors.response.use(
   async (error) => {
     const original = error.config;
 
-    if (error.response?.status === 401 && !original._retry) {
+    // Do not attempt to refresh if the request was to login
+    if (error.response?.status === 401 && !original._retry && !original.url?.includes('/auth/login')) {
       original._retry = true;
 
       try {
@@ -41,7 +42,10 @@ apiClient.interceptors.response.use(
       } catch {
         localStorage.removeItem('kymira_access_token');
         localStorage.removeItem('kymira_refresh_token');
-        window.location.href = '/auth';
+        if (window.location.pathname !== '/auth') {
+          window.location.href = '/auth';
+        }
+        return Promise.reject(error);
       }
     }
 

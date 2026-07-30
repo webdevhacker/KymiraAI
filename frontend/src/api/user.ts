@@ -45,4 +45,14 @@ export const userApi = {
     const { data } = await apiClient.post('/user/2fa/disable', { code });
     return data;
   },
+
+  requestDeleteAccount: async (): Promise<{ message: string }> => {
+    const { data } = await apiClient.post('/user/delete-request');
+    return data;
+  },
+
+  verifyDeleteAccount: async (otp: string): Promise<{ message: string }> => {
+    const { data } = await apiClient.post('/user/delete-verify', { otp });
+    return data;
+  }
 };

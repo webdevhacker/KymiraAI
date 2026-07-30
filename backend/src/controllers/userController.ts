@@ -4,8 +4,10 @@ import QRCode from 'qrcode';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
+import { Conversation } from '../models/Conversation';
+import { Memory } from '../models/Memory';
 import { AppError } from '../middleware/errorHandler';
-import { sendProfilePasswordChangeOtp, sendPasswordChangedAlert } from '../services/emailService';
+import { sendProfilePasswordChangeOtp, sendPasswordChangedAlert, sendDeleteAccountOtp } from '../services/emailService';
 import geoip from 'geoip-lite';
 
 const getClientIp = (req: Request): string => {
@@ -196,6 +198,52 @@ export const disable2FA = async (req: Request, res: Response, next: NextFunction
     await user.save({ validateBeforeSave: false });
 
     res.json({ success: true, message: '2FA Disabled successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─── Account Deletion ──────────────────────────────────────────────────────────
+
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+export const requestAccountDeletion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = await User.findById(req.user!.id);
+    if (!user) return next(new AppError('User not found', 404));
+
+    const otp = generateOtp();
+    user.deleteAccountOtp = otp;
+    user.deleteAccountExpires = new Date(Date.now() + 15 * 60 * 1000);
+    
+    await user.save({ validateBeforeSave: false });
+    await sendDeleteAccountOtp(user.email, otp);
+
+    res.json({ success: true, message: 'Deletion OTP sent to your email.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const verifyAccountDeletion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { otp } = req.body;
+    if (!otp) return next(new AppError('OTP is required', 400));
+
+    const user = await User.findById(req.user!.id).select('+deleteAccountOtp +deleteAccountExpires');
+    if (!user) return next(new AppError('User not found', 404));
+
+    if (user.deleteAccountOtp !== otp || !user.deleteAccountExpires || user.deleteAccountExpires < new Date()) {
+      return next(new AppError('Invalid or expired OTP', 400));
+    }
+
+    // Hard delete user and their data
+    const userId = user._id;
+    await Conversation.deleteMany({ userId });
+    await Memory.deleteMany({ userId });
+    await User.findByIdAndDelete(userId);
+
+    res.json({ success: true, message: 'Account permanently deleted.' });
   } catch (err) {
     next(err);
   }

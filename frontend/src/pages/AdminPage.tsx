@@ -73,7 +73,7 @@ const AdminPage: React.FC = () => {
         }}>
           System Administration
         </h1>
-        <Link to="/" style={{ color: 'var(--primary-light)', textDecoration: 'none', padding: '8px 16px', background: 'var(--bg-panel)', borderRadius: 8, border: '1px solid var(--border)' }}>← Back to Chat</Link>
+        <Link to="/chat" style={{ color: 'var(--primary-light)', textDecoration: 'none', padding: '8px 16px', background: 'var(--bg-panel)', borderRadius: 8, border: '1px solid var(--border)' }}>← Back to Chat</Link>
       </div>
       
       {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', padding: 16, borderRadius: 8, marginBottom: 20 }}>{error}</div>}

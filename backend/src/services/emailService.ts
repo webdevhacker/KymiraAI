@@ -130,3 +130,22 @@ export const sendPasswordChangedAlert = async (to: string, device: string, locat
   `;
   await sendMail(to, 'KymiraAI - Security Alert: Password Changed', html);
 };
+
+export const sendDeleteAccountOtp = async (to: string, otp: string) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">🤖</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
+      <h2 style="color: #f43f5e;">Account Deletion Request</h2>
+      <p style="color: #555; line-height: 1.5;">We received a request to permanently delete your KymiraAI account. <strong>This action is irreversible and will delete all your conversations and data.</strong></p>
+      <p style="color: #555; line-height: 1.5;">Use the OTP below to confirm account deletion. This code expires in 15 minutes.</p>
+      <div style="background-color: #fff1f2; padding: 15px; text-align: center; border-radius: 6px; margin: 20px 0; border: 1px solid #ffe4e6;">
+        <span style="font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #e11d48;">${otp}</span>
+      </div>
+      <p style="color: #888; font-size: 12px; margin-top: 30px;">If you did not request this, please change your password immediately as your account may be compromised.</p>
+    </div>
+  `;
+  await sendMail(to, 'KymiraAI - Account Deletion OTP', html);
+};
