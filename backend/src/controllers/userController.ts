@@ -5,7 +5,21 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { AppError } from '../middleware/errorHandler';
-import { sendProfilePasswordChangeOtp } from '../services/emailService';
+import { sendProfilePasswordChangeOtp, sendPasswordChangedAlert } from '../services/emailService';
+import geoip from 'geoip-lite';
+
+const getClientIp = (req: Request): string => {
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = typeof forwarded === 'string' ? forwarded.split(',')[0] : req.socket.remoteAddress;
+  return ip === '::1' ? '127.0.0.1' : (ip || '127.0.0.1');
+};
+
+const getLocation = (ip: string): string => {
+  if (ip === '127.0.0.1' || ip.startsWith('192.168.')) return 'Localhost / LAN';
+  const geo = geoip.lookup(ip);
+  if (geo) return `${geo.city}, ${geo.country}`;
+  return 'Unknown Location';
+};
 
 // ─── Profile Management ───────────────────────────────────────────────────────
 
@@ -75,6 +89,11 @@ export const verifyPasswordChange = async (req: Request, res: Response, next: Ne
     user.resetPasswordExpires = undefined;
     user.sessions = []; // Revoke all active sessions on password change
     await user.save();
+
+    const ip = getClientIp(req);
+    const location = getLocation(ip);
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    await sendPasswordChangedAlert(user.email, userAgent, location, ip);
 
     res.json({ success: true, message: 'Password updated successfully. Other sessions have been revoked.' });
   } catch (err) {

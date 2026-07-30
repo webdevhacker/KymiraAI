@@ -181,6 +181,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
             <div className="user-info" style={{ overflow: 'hidden' }}>
               <div className="user-name" style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user?.name}</div>
               <div className="user-email" style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user?.email}</div>
+              <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                <span style={{ fontSize: 9, padding: '2px 4px', borderRadius: 4, background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>Active</span>
+                {user?.isTwoFactorEnabled ? (
+                  <span style={{ fontSize: 9, padding: '2px 4px', borderRadius: 4, background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)' }}>2FA On</span>
+                ) : (
+                  <span style={{ fontSize: 9, padding: '2px 4px', borderRadius: 4, background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}>2FA Off</span>
+                )}
+              </div>
             </div>
           </div>
           <button onClick={(e) => { e.stopPropagation(); logout(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Logout">

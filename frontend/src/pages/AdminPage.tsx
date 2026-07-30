@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { apiClient } from '../api/client';
 import type { User, Session } from '../types';
@@ -61,22 +61,36 @@ const AdminPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: 40, maxWidth: 1000, margin: '0 auto', color: 'var(--text-primary)' }}>
-      <h1 style={{ marginBottom: 20 }}>Admin Dashboard</h1>
-      {error && <div style={{ color: '#ef4444', marginBottom: 20 }}>{error}</div>}
+    <div style={{ padding: '40px 20px', maxWidth: 1200, margin: '0 auto', color: 'var(--text-primary)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
+        <h1 style={{ 
+          fontSize: 32, 
+          fontWeight: 800, 
+          background: 'linear-gradient(to right, #a78bfa, #60a5fa)', 
+          WebkitBackgroundClip: 'text', 
+          color: 'transparent',
+          margin: 0
+        }}>
+          System Administration
+        </h1>
+        <Link to="/" style={{ color: 'var(--primary-light)', textDecoration: 'none', padding: '8px 16px', background: 'var(--bg-panel)', borderRadius: 8, border: '1px solid var(--border)' }}>← Back to Chat</Link>
+      </div>
+      
+      {error && <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', padding: 16, borderRadius: 8, marginBottom: 20 }}>{error}</div>}
       
       {loading ? (
-        <p>Loading users...</p>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+          <div className="spinner" style={{ width: 30, height: 30 }} />
+        </div>
       ) : (
-        <div style={{ background: 'var(--bg-panel)', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
+        <div style={{ background: 'rgba(20, 20, 25, 0.6)', backdropFilter: 'blur(12px)', borderRadius: 16, border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ background: 'var(--bg-hover)', borderBottom: '1px solid var(--border)' }}>
-                <th style={{ padding: 16 }}>Name</th>
-                <th style={{ padding: 16 }}>Email</th>
-                <th style={{ padding: 16 }}>Role</th>
-                <th style={{ padding: 16 }}>Joined</th>
-                <th style={{ padding: 16 }}>Actions</th>
+              <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <th style={{ padding: '20px 24px', color: 'var(--text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>User Info</th>
+                <th style={{ padding: '20px 24px', color: 'var(--text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Role</th>
+                <th style={{ padding: '20px 24px', color: 'var(--text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Joined</th>
+                <th style={{ padding: '20px 24px', color: 'var(--text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -84,26 +98,30 @@ const AdminPage: React.FC = () => {
                 const uid = u.id || u._id || '';
                 return (
                   <React.Fragment key={uid}>
-                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: 16 }}>{u.name}</td>
-                      <td style={{ padding: 16 }}>{u.email}</td>
-                      <td style={{ padding: 16 }}>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', transition: 'background 0.2s' }}>
+                      <td style={{ padding: '20px 24px' }}>
+                        <div style={{ fontWeight: 600, fontSize: 15 }}>{u.name}</div>
+                        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>{u.email}</div>
+                      </td>
+                      <td style={{ padding: '20px 24px' }}>
                         <span style={{ 
-                          padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600,
-                          background: u.role === 'admin' ? 'rgba(16,185,129,0.1)' : 'rgba(59,130,246,0.1)',
-                          color: u.role === 'admin' ? '#10b981' : '#3b82f6'
+                          padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+                          background: u.role === 'admin' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(96, 165, 250, 0.15)',
+                          color: u.role === 'admin' ? '#34d399' : '#93c5fd',
+                          border: `1px solid ${u.role === 'admin' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(96, 165, 250, 0.3)'}`
                         }}>
                           {u.role.toUpperCase()}
                         </span>
                       </td>
-                      <td style={{ padding: 16 }}>{new Date(u.createdAt).toLocaleDateString()}</td>
-                      <td style={{ padding: 16 }}>
+                      <td style={{ padding: '20px 24px', color: 'var(--text-desc)', fontSize: 14 }}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                      <td style={{ padding: '20px 24px', textAlign: 'right' }}>
                         <button 
                           onClick={() => handleDeleteUser(uid)}
                           disabled={user.id === uid}
                           style={{
-                            background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', 
-                            padding: '6px 12px', borderRadius: 6, cursor: user.id === uid ? 'not-allowed' : 'pointer'
+                            background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)', 
+                            padding: '8px 16px', borderRadius: 8, cursor: user.id === uid ? 'not-allowed' : 'pointer',
+                            fontSize: 13, fontWeight: 600, opacity: user.id === uid ? 0.5 : 1, transition: 'all 0.2s'
                           }}
                         >
                           Delete
@@ -111,21 +129,26 @@ const AdminPage: React.FC = () => {
                       </td>
                     </tr>
                     {u.sessions && u.sessions.length > 0 && (
-                      <tr style={{ background: 'var(--bg-void)', borderBottom: '1px solid var(--border)' }}>
-                        <td colSpan={5} style={{ padding: '16px 32px' }}>
-                          <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 10 }}>Active Sessions</h4>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 10 }}>
-                            {u.sessions.map(s => (
-                              <div key={s.token} style={{ background: 'var(--bg-panel)', padding: 10, borderRadius: 6, border: '1px solid var(--border)', fontSize: 12 }}>
-                                <div><strong>Device:</strong> {s.deviceType}</div>
-                                <div><strong>IP:</strong> {s.ip}</div>
-                                <div><strong>Location:</strong> {s.location}</div>
-                                <div><strong>Last Active:</strong> {new Date(s.lastActive).toLocaleString()}</div>
+                      <tr style={{ background: 'rgba(0, 0, 0, 0.2)', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <td colSpan={4} style={{ padding: '24px 32px' }}>
+                          <h4 style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5, color: 'var(--text-muted)', marginBottom: 16 }}>Active Sessions</h4>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+                            {[...u.sessions].sort((a, b) => new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime()).map((s, index) => (
+                              <div key={s.token} style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 16, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)', fontSize: 13, position: 'relative', overflow: 'hidden' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                  <strong style={{ color: 'var(--primary-light)' }}>{s.deviceType}</strong>
+                                  {index === 0 && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', border: '1px solid rgba(34, 197, 94, 0.3)' }}>Latest</span>}
+                                </div>
+                                <div style={{ color: 'var(--text-desc)', marginBottom: 6 }}><span style={{ color: 'var(--text-muted)' }}>IP:</span> {s.ip}</div>
+                                <div style={{ color: 'var(--text-desc)', marginBottom: 6 }}><span style={{ color: 'var(--text-muted)' }}>Loc:</span> {s.location}</div>
+                                <div style={{ color: 'var(--text-desc)', marginBottom: 16 }}><span style={{ color: 'var(--text-muted)' }}>Active:</span> {new Date(s.lastActive).toLocaleString()}</div>
                                 <button 
                                   onClick={() => handleRevokeSession(uid, s.token)}
-                                  style={{ marginTop: 8, background: 'none', border: '1px solid #ef4444', color: '#ef4444', padding: '4px 8px', borderRadius: 4, cursor: 'pointer' }}
+                                  style={{ width: '100%', background: 'none', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171', padding: '6px 0', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600, transition: 'all 0.2s' }}
+                                  onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }}
+                                  onMouseOut={(e) => { e.currentTarget.style.background = 'none'; }}
                                 >
-                                  Revoke Session
+                                  Revoke
                                 </button>
                               </div>
                             ))}

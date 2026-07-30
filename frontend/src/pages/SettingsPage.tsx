@@ -251,20 +251,29 @@ const SettingsPage: React.FC = () => {
             </p>
             {sessionsLoading ? <p>Loading sessions...</p> : (
               <div className="settings-sessions-list">
-                {sessions.map(s => (
+                {[...sessions].sort((a, b) => new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime()).map((s, index) => (
                   <div key={s.token} className="settings-session-item">
                     <div className="session-info">
-                      <div className="session-device">{s.deviceType}</div>
+                      <div className="session-device" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        {s.deviceType}
+                        {index === 0 ? (
+                          <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>Active</span>
+                        ) : (
+                          <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}>Inactive</span>
+                        )}
+                      </div>
                       <div className="session-detail">Location: {s.location}</div>
                       <div className="session-detail">IP: {s.ip}</div>
                       <div className="session-detail">Last Active: {new Date(s.lastActive).toLocaleString()}</div>
                     </div>
-                    <button 
-                      onClick={() => handleRevokeSession(s.token)}
-                      className="session-revoke-btn"
-                    >
-                      Revoke
-                    </button>
+                    {index !== 0 && (
+                      <button 
+                        onClick={() => handleRevokeSession(s.token)}
+                        className="session-revoke-btn"
+                      >
+                        Revoke
+                      </button>
+                    )}
                   </div>
                 ))}
                 {sessions.length === 0 && <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>No active sessions found.</p>}

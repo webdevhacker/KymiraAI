@@ -4,7 +4,7 @@ import { authenticator } from 'otplib';
 import geoip from 'geoip-lite';
 import { User, ISession } from '../models/User';
 import { AppError } from '../middleware/errorHandler';
-import { sendVerificationOtp, sendPasswordResetOtp, sendLoginAlert } from '../services/emailService';
+import { sendVerificationOtp, sendPasswordResetOtp, sendLoginAlert, sendPasswordChangedAlert } from '../services/emailService';
 import crypto from 'crypto';
 
 const signAccessToken = (userId: string, email: string): string =>
@@ -256,6 +256,11 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     // Revoke all sessions on password reset
     user.sessions = [];
     await user.save();
+
+    const ip = getClientIp(req);
+    const location = getLocation(ip);
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    await sendPasswordChangedAlert(user.email, userAgent, location, ip);
 
     res.json({ success: true, message: 'Password reset successful. Please log in.' });
   } catch (err) {

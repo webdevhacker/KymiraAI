@@ -34,6 +34,10 @@ const sendMail = async (to: string, subject: string, html: string) => {
 export const sendVerificationOtp = async (to: string, otp: string) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">🤖</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
       <h2 style="color: #333;">Verify your email address</h2>
       <p style="color: #555; line-height: 1.5;">Thank you for registering! Please use the following One-Time Password (OTP) to complete your registration. This code will expire in 15 minutes.</p>
       <div style="background-color: #f4f4f5; padding: 15px; text-align: center; border-radius: 6px; margin: 20px 0;">
@@ -48,6 +52,10 @@ export const sendVerificationOtp = async (to: string, otp: string) => {
 export const sendPasswordResetOtp = async (to: string, otp: string) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">🤖</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
       <h2 style="color: #333;">Reset Your Password</h2>
       <p style="color: #555; line-height: 1.5;">We received a request to reset your password. Use the OTP below to proceed. This code expires in 15 minutes.</p>
       <div style="background-color: #f4f4f5; padding: 15px; text-align: center; border-radius: 6px; margin: 20px 0;">
@@ -62,6 +70,10 @@ export const sendPasswordResetOtp = async (to: string, otp: string) => {
 export const sendProfilePasswordChangeOtp = async (to: string, otp: string) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">🤖</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
       <h2 style="color: #333;">Change Your Password</h2>
       <p style="color: #555; line-height: 1.5;">You requested to change your password from your account settings. Use the OTP below to confirm this change. This code expires in 15 minutes.</p>
       <div style="background-color: #f4f4f5; padding: 15px; text-align: center; border-radius: 6px; margin: 20px 0;">
@@ -76,6 +88,10 @@ export const sendProfilePasswordChangeOtp = async (to: string, otp: string) => {
 export const sendLoginAlert = async (to: string, device: string, location: string, ip: string) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">🤖</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
       <h2 style="color: #333;">New Login Alert</h2>
       <p style="color: #555; line-height: 1.5;">We noticed a new login to your account from an unrecognized device or location.</p>
       
@@ -90,4 +106,27 @@ export const sendLoginAlert = async (to: string, device: string, location: strin
     </div>
   `;
   await sendMail(to, 'KymiraAI - Security Alert: New Login', html);
+};
+
+export const sendPasswordChangedAlert = async (to: string, device: string, location: string, ip: string) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">🤖</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
+      <h2 style="color: #333;">Password Changed</h2>
+      <p style="color: #555; line-height: 1.5;">The password for your KymiraAI account was just changed.</p>
+      
+      <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0; border: 1px solid #e5e7eb;">
+        <p style="margin: 5px 0;"><strong>Device/Browser:</strong> ${device}</p>
+        <p style="margin: 5px 0;"><strong>Location:</strong> ${location}</p>
+        <p style="margin: 5px 0;"><strong>IP Address:</strong> ${ip}</p>
+        <p style="margin: 5px 0;"><strong>Time:</strong> ${new Date().toUTCString()}</p>
+      </div>
+
+      <p style="color: #555; line-height: 1.5;">If you did not perform this action, please contact support immediately to secure your account.</p>
+    </div>
+  `;
+  await sendMail(to, 'KymiraAI - Security Alert: Password Changed', html);
 };
