@@ -86,3 +86,27 @@ export const deleteConversation = async (
     next(err);
   }
 };
+
+export const deleteAllConversations = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.user!.id;
+    
+    // Find all conversations to get their IDs
+    const conversations = await Conversation.find({ userId });
+    const convIds = conversations.map(c => c._id);
+    
+    // Delete all messages associated with those conversations
+    await Message.deleteMany({ conversationId: { $in: convIds } });
+    
+    // Delete all conversations for the user
+    await Conversation.deleteMany({ userId });
+    
+    res.json({ success: true, message: 'All conversations and messages deleted' });
+  } catch (err) {
+    next(err);
+  }
+};

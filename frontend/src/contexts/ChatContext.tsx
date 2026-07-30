@@ -26,6 +26,7 @@ interface ChatContextValue {
     file?: File;
   }) => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
+  deleteAllConversations: () => Promise<void>;
   renameConversation: (id: string, title: string) => Promise<void>;
   setSelectedModel: (m: ModelId) => void;
   setEnableWebSearch: (v: boolean) => void;
@@ -78,13 +79,24 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (activeConversationId === id) {
           startNewChat();
         }
-      } catch (err) {
-        toast.error('Failed to delete conversation');
-        console.error('Failed to delete conversation:', err);
+      } catch (error) {
+        console.error('Failed to delete conversation:', error);
       }
     },
     [activeConversationId, startNewChat]
   );
+
+  const deleteAllConversations = useCallback(async () => {
+    try {
+      await conversationsApi.deleteAll();
+      setConversations([]);
+      setActiveConversationId(null);
+      setMessages([]);
+    } catch (error) {
+      console.error('Failed to delete all conversations:', error);
+      throw error;
+    }
+  }, []);
 
   const renameConversation = useCallback(async (id: string, title: string) => {
     try {
@@ -313,6 +325,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         startNewChat,
         sendMessage,
         deleteConversation,
+        deleteAllConversations,
         renameConversation,
         setSelectedModel,
         setEnableWebSearch,

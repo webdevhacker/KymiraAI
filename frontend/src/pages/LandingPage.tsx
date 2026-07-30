@@ -42,16 +42,16 @@ const LandingPage: React.FC = () => {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', textAlign: 'center', position: 'relative' }}>
         
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', background: 'var(--bg-elevated)', borderRadius: 100, border: '1px solid var(--border)', marginBottom: 32, fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>
-          <Zap size={14} /> Meet the next generation of AI
+          <Zap size={14} /> The ultimate AI assistant for developers
         </div>
         
         <h1 style={{ fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 700, lineHeight: 1.1, marginBottom: 24, maxWidth: 900, letterSpacing: '-1px' }}>
-          Intelligence that <br/>
-          <span>adapts to your universe.</span>
+          Built to solve <br/>
+          <span>complex problems.</span>
         </h1>
         
         <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: 'var(--text-desc)', maxWidth: 650, lineHeight: 1.6, marginBottom: 48 }}>
-          KymiraAI combines deep persistent memory, live web search, and stunning image generation into one seamless workspace.
+          KymiraAI focuses on empowering developers and programmers with persistent memory, real-time web search, and advanced reasoning to accelerate your workflow.
         </p>
 
         <div style={{ display: 'flex', gap: 20, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -68,8 +68,8 @@ const LandingPage: React.FC = () => {
       <section id="features" style={{ scrollMarginTop: '80px', padding: '100px 20px', background: 'rgba(0,0,0,0.3)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16 }}>Limitless Capabilities</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: 18, maxWidth: 600, margin: '0 auto' }}>Everything you need to accelerate your workflow and creativity.</p>
+            <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16 }}>Developer-First Capabilities</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 18, maxWidth: 600, margin: '0 auto' }}>Everything you need to write robust code, debug efficiently, and ship faster.</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>

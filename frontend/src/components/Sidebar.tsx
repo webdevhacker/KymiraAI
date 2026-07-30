@@ -31,6 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
     selectConversation,
     startNewChat,
     deleteConversation,
+    deleteAllConversations,
     renameConversation,
   } = useChat();
 
@@ -77,7 +78,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
       </div>
 
       {/* Conversations list */}
-      <div className="sidebar-section-title">Recent Chats</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px', marginBottom: 12 }}>
+        <div className="sidebar-section-title" style={{ margin: 0, padding: 0 }}>Recent Chats</div>
+        {conversations.length > 0 && (
+          <button 
+            onClick={() => { if(window.confirm('Are you sure you want to delete all chats? This cannot be undone.')) deleteAllConversations(); }}
+            style={{ background: 'none', border: 'none', color: 'var(--accent-rose)', cursor: 'pointer', fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, opacity: 0.8 }}
+            title="Clear all chats"
+            onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '0.8'}
+          >
+            <Trash2 size={12} /> Clear All
+          </button>
+        )}
+      </div>
 
       <div className="sidebar-conversations">
         {conversations.length === 0 && (

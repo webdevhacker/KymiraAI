@@ -6,10 +6,10 @@ import InputBar from './InputBar';
 import { MODELS } from '../types';
 
 const SUGGESTIONS = [
-  { icon: '🌐', text: 'What are the latest AI breakthroughs this month?' },
-  { icon: '🎨', text: 'Generate a futuristic city at night with neon lights' },
-  { icon: '💻', text: 'Write a REST API in Node.js with authentication' },
-  { icon: '🧠', text: 'Explain quantum computing in simple terms' },
+  { icon: '💻', text: 'Write a robust REST API in Node.js with authentication' },
+  { icon: '🐛', text: 'Help me debug a memory leak in my React application' },
+  { icon: '🏗️', text: 'Design a scalable microservices architecture' },
+  { icon: '🚀', text: 'Optimize my database queries for better performance' },
 ];
 
 interface ChatWindowProps {
@@ -69,11 +69,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onOpenSidebar }
       {/* ── Messages / Empty State ───────────────────────────────────── */}
       {isEmpty ? (
         <div className="empty-state" id="empty-state">
-          <div className="empty-state-icon">🤖</div>
-          <h1 className="empty-state-title">What can I help with?</h1>
+          <div className="empty-state-icon">👨‍💻</div>
+          <h1 className="empty-state-title">Ready to build?</h1>
           <p className="empty-state-sub">
-            Ask me anything — I can search the web, generate images,
-            analyze files, and remember what you tell me.
+            This AI agent focuses more on developers and programmers to solve their complex problems, write robust code, and debug efficiently.
           </p>
 
           <div className="suggestions-grid" id="suggestions-grid">

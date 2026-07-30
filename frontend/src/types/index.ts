@@ -70,10 +70,11 @@ export interface Message {
   imagePrompt?: string;
 }
 
-// ─── AI Models (OpenRouter) ───────────────────────────────────────────────────
+// ─── AI Models (OpenRouter) ──────────────────────────────────────────────────
 
 export type ModelId = 
   | 'openrouter/free'
+  | 'nvidia/nemotron-3-ultra-550b-a55b:free'
   | 'cohere/north-mini-code:free'
   | 'poolside/laguna-s-2.1:free';
 
@@ -88,7 +89,13 @@ export const MODELS: ModelOption[] = [
   {
     id: 'openrouter/free',
     name: 'OpenRouter Auto',
-    description: 'Auto-selects best available model',
+    description: 'Auto-selects best available free model',
+    icon: '🤖',
+  },
+  {
+    id: 'nvidia/nemotron-3-ultra-550b-a55b:free',
+    name: 'NVIDIA Nemotron Ultra',
+    description: 'Massive scale reasoning model',
     icon: '🚀',
   },
   {
@@ -100,8 +107,8 @@ export const MODELS: ModelOption[] = [
   {
     id: 'poolside/laguna-s-2.1:free',
     name: 'Poolside Laguna S',
-    description: 'Software development focus',
-    icon: '🛠️',
+    description: 'This model is best for developers with highskilled AI agents',
+    icon: '🌊',
   },
 ];
 

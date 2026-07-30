@@ -31,6 +31,10 @@ export const conversationsApi = {
   delete: async (id: string): Promise<void> => {
     await apiClient.delete(`/conversations/${id}`);
   },
+
+  deleteAll: async (): Promise<void> => {
+    await apiClient.delete('/conversations');
+  },
 };
 
 export const memoryApi = {
