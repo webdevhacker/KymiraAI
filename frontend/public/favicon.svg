@@ -1,0 +1,30 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background with subtle glow -->
+  <rect width="256" height="256" rx="64" fill="#0A0A0C"/>
+  <rect x="2" y="2" width="252" height="252" rx="62" fill="url(#bg-gradient)"/>
+  
+  <!-- Outer glowing ring -->
+  <circle cx="128" cy="128" r="90" stroke="url(#ring-gradient)" stroke-width="6" stroke-dasharray="10 10" opacity="0.6">
+    <animateTransform attributeName="transform" type="rotate" from="0 128 128" to="360 128 128" dur="20s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Glowing K -->
+  <path d="M95 75V181" stroke="url(#k-gradient)" stroke-width="24" stroke-linecap="round"/>
+  <path d="M165 75L95 130L165 181" stroke="url(#k-gradient)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Definitions for Gradients -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E1A33" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#0A0A0C" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="ring-gradient" x1="38" y1="38" x2="218" y2="218" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#3B82F6" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="k-gradient" x1="95" y1="75" x2="165" y2="181" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+  </defs>
+</svg>
