@@ -15,6 +15,7 @@ import userRoutes from './routes/user';
 import adminRoutes from './routes/admin';
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (required for express-rate-limit behind reverse proxy)
 const PORT = process.env.PORT || 5000;
 
 const dns = require('dns');
