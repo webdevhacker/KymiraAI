@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const TermsPage: React.FC = () => (
-  <div style={{ padding: 40, maxWidth: 800, margin: '0 auto', color: 'var(--text-primary)', lineHeight: 1.6, height: '100vh', overflowY: 'auto' }}>
+  <div style={{ padding: 40, maxWidth: 800, margin: '0 auto', color: 'var(--text-primary)', lineHeight: 1.6, height: '100dvh', overflowY: 'auto' }}>
     <Link to="/" style={{ color: 'var(--primary-light)', textDecoration: 'none', marginBottom: 20, display: 'inline-block' }}>← Back</Link>
     <h1>Terms of Service</h1>
     <p>Last updated: July 2026</p>

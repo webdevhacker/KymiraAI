@@ -12,7 +12,7 @@ const LandingPage: React.FC = () => {
   }
 
   return (
-    <div className="landing-page" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', color: 'var(--text-primary)', overflowX: 'hidden' }}>
+    <div className="landing-page" style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', color: 'var(--text-primary)', overflowX: 'hidden' }}>
       
       {/* Navigation */}
       <nav style={{ 
@@ -76,7 +76,7 @@ const LandingPage: React.FC = () => {
             {[
               { icon: <Brain size={24} color="#a78bfa" />, title: 'Persistent Memory', desc: 'Kymira remembers your past conversations, code snippets, and preferences across all your sessions.' },
               { icon: <Globe size={24} color="#60a5fa" />, title: 'Live Web Search', desc: 'Need real-time data? Kymira searches the web instantly to provide up-to-date and accurate answers.' },
-              { icon: <ImageIcon size={24} color="#34d399" />, title: 'Image Generation', desc: 'Turn text into stunning artwork instantly using our integrated AI image generation models.' },
+              { icon: <Zap size={24} color="#34d399" />, title: 'Advanced Reasoning', desc: 'Solve complex programming challenges with AI models optimized for logical deduction and coding.' },
               { icon: <Shield size={24} color="#f472b6" />, title: 'Enterprise Security', desc: 'Your data is secured with industry-leading encryption, 2FA support, and complete privacy controls.' }
             ].map((feature, i) => (
               <div key={i} style={{ padding: 32, background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: 16, transition: 'transform 0.2s', cursor: 'default' }}

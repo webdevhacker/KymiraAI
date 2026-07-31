@@ -184,9 +184,9 @@ const InputBar: React.FC = () => {
         )}
       </div>
 
-      <p className="input-hint">
-        KymiraAI can search the web, generate images, and analyze files.
-      </p>
+        <p className="input-hint">
+          KymiraAI is built for developers to solve complex problems and write robust code.
+        </p>
       </div>
     </div>
   );

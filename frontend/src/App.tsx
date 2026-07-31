@@ -21,7 +21,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100vh',
+          height: '100dvh',
           background: 'var(--bg-void)',
         }}
       >
