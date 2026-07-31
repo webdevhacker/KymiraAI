@@ -7,7 +7,7 @@ import { User } from '../models/User';
 import { Conversation } from '../models/Conversation';
 import { Memory } from '../models/Memory';
 import { AppError } from '../middleware/errorHandler';
-import { sendProfilePasswordChangeOtp, sendPasswordChangedAlert, sendDeleteAccountOtp } from '../services/emailService';
+import { sendProfilePasswordChangeOtp, sendPasswordChangedAlert, sendDeleteAccountOtp, sendFallback2FAOtp } from '../services/emailService';
 import geoip from 'geoip-lite';
 
 const getClientIp = (req: Request): string => {
@@ -189,19 +189,51 @@ export const verifyAndEnable2FA = async (req: Request, res: Response, next: Next
   }
 };
 
+export const requestDisable2FAOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = await User.findById(req.user!.id);
+    if (!user || !user.isTwoFactorEnabled) {
+      return next(new AppError('2FA is not enabled', 400));
+    }
+
+    const otp = generateOtp();
+    user.fallback2FaOtp = await bcrypt.hash(otp, 10);
+    user.fallback2FaExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    await sendFallback2FAOtp(user.email, otp);
+    res.json({ success: true, message: 'OTP sent to email to disable 2FA' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const disable2FA = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { code } = req.body;
     if (!code) return next(new AppError('Code required', 400));
 
-    const user = await User.findById(req.user!.id).select('+twoFactorSecret');
+    const user = await User.findById(req.user!.id).select('+twoFactorSecret +fallback2FaOtp +fallback2FaExpires');
     if (!user || !user.twoFactorSecret) return next(new AppError('2FA is not enabled', 400));
 
-    const isValid = authenticator.check(code, user.twoFactorSecret);
+    let isValid = false;
+
+    // 1. Authenticator code
+    if (user.twoFactorSecret) {
+      isValid = authenticator.check(code, user.twoFactorSecret);
+    }
+
+    // 2. Fallback Email OTP
+    if (!isValid && user.fallback2FaOtp && user.fallback2FaExpires && user.fallback2FaExpires > new Date()) {
+      isValid = await bcrypt.compare(code, user.fallback2FaOtp);
+    }
+
     if (!isValid) return next(new AppError('Invalid code', 400));
 
     user.isTwoFactorEnabled = false;
     user.twoFactorSecret = undefined;
+    user.fallback2FaOtp = undefined;
+    user.fallback2FaExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
     res.json({ success: true, message: '2FA Disabled successfully' });

@@ -154,6 +154,15 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleRequestDisable2FAOtp = async () => {
+    try {
+      const res = await userApi.requestDisable2FAOtp();
+      toast.success(res.message || 'OTP sent to your email!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to send OTP');
+    }
+  };
+
   const handleRevokeSession = async (tokenId: string) => {
     try {
       const res = await userApi.revokeSession(tokenId);
@@ -329,8 +338,17 @@ const SettingsPage: React.FC = () => {
             ) : (
               <form onSubmit={handleDisable2FA} className="settings-form">
                 <div className="form-group" style={{ marginBottom: 15 }}>
-                  <label className="form-label">Enter Code to Disable 2FA</label>
+                  <label className="form-label">Enter Code to Disable 2FA (Authenticator or Email OTP)</label>
                   <input className="form-input" value={twoFaCode} onChange={e => setTwoFaCode(e.target.value)} required placeholder="6-digit code" />
+                  <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                    <button 
+                      type="button" 
+                      onClick={handleRequestDisable2FAOtp}
+                      style={{ background: 'none', border: 'none', color: 'var(--primary-light)', fontSize: '13px', cursor: 'pointer', padding: 0 }}
+                    >
+                      Lost access? Send OTP to Email
+                    </button>
+                  </div>
                 </div>
                 <button type="submit" className="btn btn-secondary" style={{ color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }}>Disable 2FA</button>
               </form>

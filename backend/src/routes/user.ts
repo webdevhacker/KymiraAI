@@ -7,6 +7,7 @@ import {
   generate2FA, 
   verifyAndEnable2FA, 
   disable2FA,
+  requestDisable2FAOtp,
   requestPasswordChange,
   verifyPasswordChange,
   requestAccountDeletion,
@@ -29,6 +30,7 @@ router.delete('/sessions/:tokenId', revokeSession);
 
 router.post('/2fa/generate', generate2FA);
 router.post('/2fa/verify', verifyAndEnable2FA);
+router.post('/2fa/disable/request', requestDisable2FAOtp);
 router.post('/2fa/disable', disable2FA);
 
 router.post('/delete-request', requestAccountDeletion);
