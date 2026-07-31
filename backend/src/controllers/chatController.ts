@@ -5,6 +5,7 @@ import { streamChat, generateImageDirectly } from '../services/openaiService';
 import { getMemories, extractAndStoreMemories } from '../services/memoryService';
 import { Message } from '../models/Message';
 import { Conversation } from '../models/Conversation';
+import { User } from '../models/User';
 import { AppError } from '../middleware/errorHandler';
 
 export const streamChatHandler = async (
@@ -24,6 +25,34 @@ export const streamChatHandler = async (
 
   if (!message && !req.file) {
     next(new AppError('Message or file is required', 400));
+    return;
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      next(new AppError('User not found', 404));
+      return;
+    }
+
+    const now = new Date();
+    // Reset quota if the reset time has passed
+    if (now >= new Date(user.quotaResetAt)) {
+      user.aiQuota = 100;
+      user.quotaResetAt = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+    }
+
+    if (user.aiQuota <= 0) {
+      next(new AppError('Limit reached. Resets at ' + user.quotaResetAt.toLocaleTimeString(), 429));
+      return;
+    }
+
+    // Decrement quota
+    user.aiQuota -= 1;
+    await user.save();
+
+  } catch (err) {
+    next(err);
     return;
   }
 

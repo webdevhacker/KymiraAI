@@ -1,8 +1,8 @@
 import { apiClient } from './client';
-import type { User, Session } from '../types';
+import type { User, Session, Memory } from '../types';
 
 export const userApi = {
-  getProfile: async (): Promise<{ user: User; sessions: Session[] }> => {
+  getProfile: async (): Promise<{ user: User; sessions: Session[]; memory: Memory | null }> => {
     const { data } = await apiClient.get('/user/profile');
     return data;
   },

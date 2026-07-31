@@ -35,7 +35,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     if (name) user.name = name;
 
     await user.save();
-    res.json({ success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    res.json({ success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role, aiQuota: user.aiQuota, quotaResetAt: user.quotaResetAt } });
   } catch (err) {
     next(err);
   }
@@ -108,7 +108,14 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
     const user = await User.findById(req.user!.id);
     if (!user) return next(new AppError('User not found', 404));
 
-    res.json({ success: true, user, sessions: user.sessions });
+    const memory = await Memory.findOne({ userId: user.id });
+
+    res.json({ 
+      success: true, 
+      user, 
+      sessions: user.sessions,
+      memory: memory ? { facts: memory.facts, skills: memory.skills } : null
+    });
   } catch (err) {
     next(err);
   }

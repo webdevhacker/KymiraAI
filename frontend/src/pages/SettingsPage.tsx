@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { userApi } from '../api/user';
 import { useAuth } from '../contexts/AuthContext';
-import type { Session } from '../types';
+import type { Session, Memory } from '../types';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
@@ -28,25 +28,25 @@ const SettingsPage: React.FC = () => {
   const [deleteOtp, setDeleteOtp] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Sessions State
+  // Sessions & Memory State
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [memory, setMemory] = useState<Memory | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    if (activeTab === 'sessions') {
-      loadSessions();
-    }
-  }, [activeTab]);
+    loadProfileData();
+  }, []);
 
-  const loadSessions = async () => {
-    setSessionsLoading(true);
+  const loadProfileData = async () => {
+    setDataLoading(true);
     try {
       const res = await userApi.getProfile();
       setSessions(res.sessions || []);
+      setMemory(res.memory || null);
     } catch (e) {
       console.error(e);
     } finally {
-      setSessionsLoading(false);
+      setDataLoading(false);
     }
   };
 
@@ -241,6 +241,33 @@ const SettingsPage: React.FC = () => {
               </form>
             )}
 
+            <hr className="settings-divider" />
+
+            <h2 className="settings-section-title">Technical Skills (AI Analyzed)</h2>
+            <div style={{ marginBottom: 40 }}>
+              {!memory || !memory.skills || Object.keys(memory.skills).length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
+                  Start chatting about technical topics to build your AI-analyzed skill profile.
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {Object.entries(memory.skills)
+                    .sort(([, a], [, b]) => b - a)
+                    .map(([skill, score]) => (
+                    <div key={skill} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
+                        <span>{skill}</span>
+                        <span style={{ color: 'var(--primary-light)' }}>{score}/100</span>
+                      </div>
+                      <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ width: `${score}%`, height: '100%', background: 'linear-gradient(90deg, var(--primary), var(--accent-cyan))', borderRadius: 3 }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <hr className="settings-divider" style={{ marginTop: 40, borderColor: 'rgba(244, 63, 94, 0.2)' }} />
 
             <h2 className="settings-section-title" style={{ color: 'var(--accent-rose)' }}>Danger Zone</h2>
@@ -317,7 +344,7 @@ const SettingsPage: React.FC = () => {
             <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 30 }}>
               These are the devices that have logged into your account. Revoke any unfamiliar ones.
             </p>
-            {sessionsLoading ? <p>Loading sessions...</p> : (
+            {dataLoading ? <p>Loading sessions...</p> : (
               <div className="settings-sessions-list">
                 {[...sessions].sort((a, b) => new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime()).map((s, index) => (
                   <div key={s.token} className="settings-session-item">

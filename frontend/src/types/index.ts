@@ -16,6 +16,13 @@ export interface User {
   role: 'user' | 'admin';
   hasAcceptedTerms: boolean;
   isTwoFactorEnabled?: boolean;
+  aiQuota?: number;
+  quotaResetAt?: string;
+}
+
+export interface Memory {
+  facts: string[];
+  skills: Record<string, number>;
 }
 
 export interface AuthState {

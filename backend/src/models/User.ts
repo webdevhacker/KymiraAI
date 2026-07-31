@@ -39,6 +39,10 @@ export interface IUser extends Document {
   deleteAccountOtp?: string;
   deleteAccountExpires?: Date;
   
+  // Rate Limits
+  aiQuota: number;
+  quotaResetAt: Date;
+  
   // Active Sessions
   sessions: ISession[];
   
@@ -86,6 +90,9 @@ const UserSchema = new Schema<IUser>(
     isTwoFactorEnabled: { type: Boolean, default: false },
     twoFactorSecret: { type: String, select: false },
     
+    aiQuota: { type: Number, default: 100 },
+    quotaResetAt: { type: Date, default: Date.now },
+
     sessions: [SessionSchema]
   },
   { timestamps: true }

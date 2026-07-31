@@ -8,6 +8,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
+import { useAuth } from '../contexts/AuthContext';
 import { MODELS, type ModelId } from '../types';
 
 const InputBar: React.FC = () => {
@@ -21,6 +22,10 @@ const InputBar: React.FC = () => {
     setEnableWebSearch,
   } = useChat();
 
+  const { user } = useAuth();
+  const quota = user?.aiQuota ?? 100;
+  const isQuotaReached = quota <= 0;
+  
   const [text, setText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -112,6 +117,13 @@ const InputBar: React.FC = () => {
             🌐 Web search on
           </span>
         )}
+
+        <div style={{ marginLeft: 'auto', fontSize: 12, color: isQuotaReached ? 'var(--accent-rose)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Zap size={12} />
+          {isQuotaReached && user?.quotaResetAt 
+            ? `Limit reached. Resets at ${new Date(user.quotaResetAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+            : `${quota} messages left`}
+        </div>
       </div>
 
       {/* File Preview */}
@@ -137,7 +149,7 @@ const InputBar: React.FC = () => {
           className="btn-icon"
           style={{ border: 'none', background: 'transparent' }}
           onClick={() => fileInputRef.current?.click()}
-          disabled={isStreaming}
+          disabled={isStreaming || isQuotaReached}
           title="Attach file or image"
         >
           <Paperclip size={18} />
@@ -159,12 +171,14 @@ const InputBar: React.FC = () => {
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
           placeholder={
-            isStreaming
+            isQuotaReached
+              ? 'Hourly limit reached. Please wait.'
+              : isStreaming
               ? 'KymiraAI is thinking...'
               : 'Message KymiraAI... (Shift+Enter for new line)'
           }
           rows={1}
-          disabled={isStreaming && !file}
+          disabled={(isStreaming && !file) || isQuotaReached}
         />
 
         {isStreaming ? (

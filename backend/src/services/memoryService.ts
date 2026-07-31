@@ -28,8 +28,13 @@ export const extractAndStoreMemories = async (
         {
           role: 'system',
           content: `Extract important, reusable personal facts about the user from this snippet.
-Return ONLY a valid JSON object like: { "facts": ["User's name is Alice", "Prefers Python"] }
-Return { "facts": [] } if there are no memorable personal facts. Keep facts under 100 chars.`
+Also analyze the user's technical skills (languages, frameworks, concepts) demonstrated in the conversation and rate their proficiency from 1 to 100.
+Return ONLY a valid JSON object matching this schema:
+{ 
+  "facts": ["User's name is Alice", "Prefers Python"],
+  "skills": { "Python": 65, "React": 80, "System Design": 50 }
+}
+Return empty arrays/objects if nothing is detected. Keep facts under 100 chars.`
         },
         {
           role: 'user',
@@ -43,20 +48,41 @@ Return { "facts": [] } if there are no memorable personal facts. Keep facts unde
     const content = completion.choices[0]?.message?.content;
     if (!content) return;
 
-    const parsed = JSON.parse(content) as { facts?: string[] };
+    const parsed = JSON.parse(content) as { facts?: string[], skills?: Record<string, number> };
     const newFacts = parsed.facts || [];
-    if (newFacts.length === 0) return;
+    const newSkills = parsed.skills || {};
+    
+    if (newFacts.length === 0 && Object.keys(newSkills).length === 0) return;
 
     const existing = await Memory.findOne({ userId });
+    
+    // Update Facts
     const existingFacts = existing?.facts ?? [];
     const toAdd = newFacts.filter((f) => !existingFacts.includes(f));
+    
+    // Update Skills
+    const updateOps: any = {};
+    if (toAdd.length > 0) {
+      updateOps.$push = { facts: { $each: toAdd, $slice: -40 } };
+    }
+    
+    if (Object.keys(newSkills).length > 0) {
+      updateOps.$set = updateOps.$set || {};
+      for (const [skill, score] of Object.entries(newSkills)) {
+        if (typeof score !== 'number' || score < 1 || score > 100) continue;
+        const currentScore = existing?.skills?.get(skill);
+        // If skill exists, take a moving average. Otherwise set it.
+        const updatedScore = currentScore ? Math.round((currentScore + score) / 2) : score;
+        updateOps.$set[`skills.${skill}`] = updatedScore;
+      }
+    }
 
-    if (toAdd.length === 0) return;
+    if (Object.keys(updateOps).length === 0) return;
 
     await Memory.findOneAndUpdate(
       { userId },
-      { $push: { facts: { $each: toAdd, $slice: -40 } } },
-      { upsert: true }
+      updateOps,
+      { upsert: true, new: true }
     );
   } catch (err) {
     // Memory extraction is best effort
