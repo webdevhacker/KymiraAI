@@ -84,13 +84,15 @@ IMPORTANT: At the end of every response, you MUST ask a relevant follow-up quest
   const doStream = async (msgs: OpenAI.ChatCompletionMessageParam[], depth = 0): Promise<void> => {
     if (depth > 5) return;
 
-    const stream = await openai.chat.completions.create({
+    const requestPayload = {
       model: model || 'openrouter/auto',
       messages: msgs,
       tools: enableWebSearch ? tools : [tools[1]],
       stream: true,
-      ...({ include_reasoning: true } as any)
-    });
+      include_reasoning: true,
+    } as unknown as OpenAI.ChatCompletionCreateParamsStreaming;
+
+    const stream = await openai.chat.completions.create(requestPayload);
 
     let toolCalls: any[] = [];
 
