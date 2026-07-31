@@ -49,6 +49,24 @@ export const sendVerificationOtp = async (to: string, otp: string) => {
   await sendMail(to, 'KymiraAI - Email Verification', html);
 };
 
+export const sendFallback2FAOtp = async (to: string, otp: string) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eaeaeb;">
+        <span style="font-size: 32px;">dY -</span>
+        <h1 style="color: #111; margin: 10px 0 0 0; font-size: 20px;">KymiraAI</h1>
+      </div>
+      <h2 style="color: #333;">Your 2FA Fallback Code</h2>
+      <p style="color: #555; line-height: 1.5;">You requested an email code to log into your account because you couldn't access your authenticator app. This code will expire in 10 minutes.</p>
+      <div style="background-color: #f4f4f5; padding: 15px; text-align: center; border-radius: 6px; margin: 20px 0;">
+        <span style="font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #111;">${otp}</span>
+      </div>
+      <p style="color: #888; font-size: 12px; margin-top: 30px;">If you did not request this, please secure your account immediately by changing your password.</p>
+    </div>
+  `;
+  await sendMail(to, 'KymiraAI - 2FA Fallback Code', html);
+};
+
 export const sendPasswordResetOtp = async (to: string, otp: string) => {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaeb; border-radius: 8px;">

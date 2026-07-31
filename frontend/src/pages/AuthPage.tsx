@@ -67,6 +67,18 @@ const AuthPage: React.FC = () => {
     }
   };
 
+  const handleRequestFallback2FA = async () => {
+    setIsLoading(true);
+    try {
+      const res = await authApi.requestFallback2FA(tempToken);
+      toast.success(res.message || 'OTP sent to your email!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to send OTP');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleForgotPassword = async () => {
     const res = await authApi.forgotPassword(email);
     toast.success(res.message);
@@ -193,7 +205,7 @@ const AuthPage: React.FC = () => {
             {(mode === 'verify-email' || mode === 'verify-2fa' || mode === 'reset-password') && (
               <div className="form-group">
                 <label className="form-label" htmlFor="otp-input">
-                  {mode === 'verify-2fa' ? 'Authenticator Code' : 'One-Time Password'}
+                  {mode === 'verify-2fa' ? 'Authenticator Code (or Email OTP)' : 'One-Time Password'}
                 </label>
                 <input
                   id="otp-input"
@@ -204,6 +216,17 @@ const AuthPage: React.FC = () => {
                   onChange={(e) => setOtp(e.target.value)}
                   required
                 />
+                {mode === 'verify-2fa' && (
+                  <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                    <button 
+                      type="button" 
+                      onClick={handleRequestFallback2FA}
+                      style={{ background: 'none', border: 'none', color: 'var(--primary-light)', fontSize: '13px', cursor: 'pointer', padding: 0 }}
+                    >
+                      Lost access? Send OTP to Email
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

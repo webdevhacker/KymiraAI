@@ -34,6 +34,8 @@ export interface IUser extends Document {
   // Two-Factor Auth
   isTwoFactorEnabled: boolean;
   twoFactorSecret?: string;
+  fallback2FaOtp?: string;
+  fallback2FaExpires?: Date;
   
   // Account Deletion
   deleteAccountOtp?: string;
@@ -89,6 +91,8 @@ const UserSchema = new Schema<IUser>(
     
     isTwoFactorEnabled: { type: Boolean, default: false },
     twoFactorSecret: { type: String, select: false },
+    fallback2FaOtp: { type: String, select: false },
+    fallback2FaExpires: { type: Date, select: false },
     
     aiQuota: { type: Number, default: 100 },
     quotaResetAt: { type: Date, default: Date.now },
@@ -110,6 +114,8 @@ UserSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
   delete obj.twoFactorSecret;
+  delete obj.fallback2FaOtp;
+  delete obj.fallback2FaExpires;
   delete obj.emailVerificationOtp;
   delete obj.emailVerificationExpires;
   delete obj.resetPasswordOtp;

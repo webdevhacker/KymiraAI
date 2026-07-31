@@ -32,6 +32,11 @@ export const authApi = {
     return data;
   },
 
+  requestFallback2FA: async (tempToken: string): Promise<{ success: boolean; message: string }> => {
+    const { data } = await apiClient.post('/auth/fallback-2fa', { tempToken });
+    return data;
+  },
+
   forgotPassword: async (email: string): Promise<{ success: boolean; message: string }> => {
     const { data } = await apiClient.post('/auth/forgot-password', { email });
     return data;

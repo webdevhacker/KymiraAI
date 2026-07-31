@@ -7,6 +7,7 @@ import {
   getMe, 
   verifyEmail, 
   verify2FA, 
+  requestFallback2FA,
   forgotPassword, 
   resetPassword 
 } from '../controllers/authController';
@@ -19,6 +20,7 @@ router.post('/register', register);
 router.post('/verify-email', verifyEmail);
 router.post('/login', login);
 router.post('/verify-2fa', verify2FA);
+router.post('/fallback-2fa', requestFallback2FA);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.post('/refresh', refreshTokenHandler);

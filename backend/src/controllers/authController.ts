@@ -4,8 +4,9 @@ import { authenticator } from 'otplib';
 import geoip from 'geoip-lite';
 import { User, ISession } from '../models/User';
 import { AppError } from '../middleware/errorHandler';
-import { sendVerificationOtp, sendPasswordResetOtp, sendLoginAlert, sendPasswordChangedAlert } from '../services/emailService';
+import { sendVerificationOtp, sendPasswordResetOtp, sendLoginAlert, sendPasswordChangedAlert, sendFallback2FAOtp } from '../services/emailService';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 const signAccessToken = (userId: string, email: string): string =>
   jwt.sign({ userId, email }, process.env.JWT_SECRET!, {
@@ -176,19 +177,60 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   }
 };
 
+export const requestFallback2FA = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { tempToken } = req.body;
+    if (!tempToken) return next(new AppError('Token required', 400));
+
+    const decoded = jwt.verify(tempToken, process.env.JWT_SECRET!) as { userId: string };
+    const user = await User.findById(decoded.userId);
+    
+    if (!user || !user.isTwoFactorEnabled) {
+      return next(new AppError('2FA not enabled', 400));
+    }
+
+    const otp = generateOtp();
+    user.fallback2FaOtp = await bcrypt.hash(otp, 10);
+    user.fallback2FaExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    await user.save({ validateBeforeSave: false });
+
+    await sendFallback2FAOtp(user.email, otp);
+    res.json({ success: true, message: 'Fallback OTP sent to email' });
+  } catch (err) {
+    next(new AppError('Invalid or expired token', 401));
+  }
+};
+
 export const verify2FA = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { tempToken, code } = req.body;
     if (!tempToken || !code) return next(new AppError('Token and code required', 400));
 
     const decoded = jwt.verify(tempToken, process.env.JWT_SECRET!) as { userId: string };
-    const user = await User.findById(decoded.userId).select('+twoFactorSecret');
+    const user = await User.findById(decoded.userId).select('+twoFactorSecret +fallback2FaOtp +fallback2FaExpires');
     
-    if (!user || !user.isTwoFactorEnabled || !user.twoFactorSecret) {
+    if (!user || !user.isTwoFactorEnabled) {
       return next(new AppError('2FA not enabled', 400));
     }
 
-    const isValid = authenticator.check(code, user.twoFactorSecret);
+    let isValid = false;
+
+    // 1. Check Authenticator App code
+    if (user.twoFactorSecret) {
+      isValid = authenticator.check(code, user.twoFactorSecret);
+    }
+
+    // 2. Fallback to Email OTP
+    if (!isValid && user.fallback2FaOtp && user.fallback2FaExpires && user.fallback2FaExpires > new Date()) {
+      isValid = await bcrypt.compare(code, user.fallback2FaOtp);
+      if (isValid) {
+        // Clear fallback OTP after use
+        user.fallback2FaOtp = undefined;
+        user.fallback2FaExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+      }
+    }
+
     if (!isValid) return next(new AppError('Invalid 2FA code', 401));
 
     const ip = getClientIp(req);
