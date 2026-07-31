@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Copy, Check, Download, ExternalLink } from 'lucide-react';
+import { Copy, Check, Download, ExternalLink, Brain } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { Message } from '../types';
 
@@ -113,12 +113,23 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           ))}
 
           {/* Message bubble */}
-          {(message.content || message.isStreaming) && (
+          {(message.content || message.reasoning || message.isStreaming) && (
             <div className="message-bubble">
               {isUser ? (
                 <span style={{ whiteSpace: 'pre-wrap' }}>{message.content}</span>
               ) : (
-                <ReactMarkdown
+                <>
+                  {message.reasoning && (
+                    <div className="reasoning-block">
+                      <div className="reasoning-header">
+                        <Brain size={14} />
+                        Thinking Process
+                      </div>
+                      <span style={{ whiteSpace: 'pre-wrap' }}>{message.reasoning}</span>
+                    </div>
+                  )}
+                  {message.content && (
+                    <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
                   components={{
@@ -175,6 +186,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                   {message.content}
                 </ReactMarkdown>
               )}
+            </>
+          )}
               {/* Streaming cursor */}
               {message.isStreaming && message.streamingState === null && (
                 <span className="streaming-cursor" />

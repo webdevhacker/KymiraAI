@@ -89,6 +89,8 @@ IMPORTANT: At the end of every response, you MUST ask a relevant follow-up quest
       messages: msgs,
       tools: enableWebSearch ? tools : [tools[1]],
       stream: true,
+      // @ts-ignore - OpenRouter specific parameter
+      include_reasoning: true,
     });
 
     let toolCalls: any[] = [];
@@ -100,6 +102,12 @@ IMPORTANT: At the end of every response, you MUST ask a relevant follow-up quest
       if (delta.content) {
         fullContent += delta.content;
         send({ type: 'content', content: delta.content });
+      }
+
+      // @ts-ignore - OpenRouter specific reasoning field
+      if (delta.reasoning) {
+        // @ts-ignore
+        send({ type: 'reasoning', content: delta.reasoning });
       }
 
       if (delta.tool_calls) {

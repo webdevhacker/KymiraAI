@@ -65,6 +65,7 @@ export interface Message {
   conversationId?: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
+  reasoning?: string;
   attachments?: Attachment[];
   searchResults?: SearchResult[];
   imageUrl?: string;
@@ -133,6 +134,7 @@ export interface ImageGenRequest {
 export type SSEEventType =
   | 'conversation_id'
   | 'content'
+  | 'reasoning'
   | 'searching'
   | 'search_results'
   | 'search_error'

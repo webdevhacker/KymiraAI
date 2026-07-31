@@ -185,6 +185,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 });
                 break;
 
+              case 'reasoning':
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last?.isStreaming) {
+                    updated[updated.length - 1] = {
+                      ...last,
+                      reasoning: (last.reasoning || '') + (event.content || ''),
+                    };
+                  }
+                  return updated;
+                });
+                break;
+
               case 'searching':
                 setMessages((prev) => {
                   const updated = [...prev];
