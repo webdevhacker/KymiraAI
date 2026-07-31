@@ -9,6 +9,8 @@ interface AuthContextValue {
   loginSuccess: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
+  token: string | null;
+  checkAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -17,21 +19,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Validate stored token on mount
-  useEffect(() => {
+  const checkAuth = async () => {
     const token = localStorage.getItem('kymira_access_token');
     if (token) {
-      authApi
-        .getMe()
-        .then(setUser)
-        .catch(() => {
-          localStorage.removeItem('kymira_access_token');
-          localStorage.removeItem('kymira_refresh_token');
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
+      try {
+        const userData = await authApi.getMe();
+        setUser(userData);
+      } catch {
+        localStorage.removeItem('kymira_access_token');
+        localStorage.removeItem('kymira_refresh_token');
+      }
     }
+    setIsLoading(false);
+  };
+
+  // Validate stored token on mount
+  useEffect(() => {
+    checkAuth();
   }, []);
 
   const loginSuccess = (newUser: User, accessToken: string, refreshToken: string) => {
@@ -58,7 +62,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, isAuthenticated: !!user, loginSuccess, logout, updateUser }}
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        loginSuccess,
+        logout,
+        updateUser,
+        token: localStorage.getItem('kymira_access_token'),
+        checkAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>

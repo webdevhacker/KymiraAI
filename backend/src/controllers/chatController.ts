@@ -35,20 +35,28 @@ export const streamChatHandler = async (
       return;
     }
 
-    const now = new Date();
-    // Reset quota if the reset time has passed
-    if (now >= new Date(user.quotaResetAt)) {
-      user.aiQuota = 100;
-      user.quotaResetAt = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
-    }
+    if (user.isPro && user.credits > 0) {
+      user.credits -= 1;
+    } else {
+      const now = new Date();
+      // Reset quota if the reset time has passed
+      if (now >= new Date(user.quotaResetAt)) {
+        user.aiQuota = 100;
+        user.quotaResetAt = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+      }
 
-    if (user.aiQuota <= 0) {
-      next(new AppError('Limit reached. Resets at ' + user.quotaResetAt.toLocaleTimeString(), 429));
-      return;
-    }
+      if (user.aiQuota <= 0) {
+        if (user.isPro) {
+          next(new AppError('Pro credits exhausted and hourly limit reached. Resets at ' + user.quotaResetAt.toLocaleTimeString(), 429));
+        } else {
+          next(new AppError('Limit reached. Resets at ' + user.quotaResetAt.toLocaleTimeString(), 429));
+        }
+        return;
+      }
 
-    // Decrement quota
-    user.aiQuota -= 1;
+      // Decrement quota
+      user.aiQuota -= 1;
+    }
     await user.save();
 
   } catch (err) {

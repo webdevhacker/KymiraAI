@@ -25,7 +25,8 @@
     "openai": "^7.1.0",
     "otplib": "^11.0.1",
     "qrcode": "^1.5.4",
-    "rate-limit-mongo": "^2.3.2"
+    "rate-limit-mongo": "^2.3.2",
+    "razorpay": "^2.9.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

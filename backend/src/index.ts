@@ -13,6 +13,7 @@ import conversationRoutes from './routes/conversations';
 import memoryRoutes from './routes/memory';
 import userRoutes from './routes/user';
 import adminRoutes from './routes/admin';
+import paymentRoutes from './routes/payment';
 
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (required for express-rate-limit behind reverse proxy)
@@ -58,6 +59,7 @@ app.use('/api/conversations', conversationRoutes);
 app.use('/api/memory', memoryRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

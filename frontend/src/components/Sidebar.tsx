@@ -10,11 +10,13 @@ import {
   Check,
   X,
   Settings,
-  ShieldAlert
+  ShieldAlert,
+  Crown
 } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import UpgradeModal from './UpgradeModal';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -38,6 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleRenameStart = (id: string, currentTitle: string) => {
@@ -167,6 +170,39 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
           )}
         </div>
 
+        {!user?.isPro && (
+          <div style={{ padding: '0 12px 12px' }}>
+            <button 
+              onClick={() => setIsUpgradeModalOpen(true)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%)',
+                border: '1px solid rgba(234, 179, 8, 0.3)',
+                color: '#eab308',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%)';
+              }}
+            >
+              <Crown size={14} />
+              Upgrade to Pro
+            </button>
+          </div>
+        )}
+
           <div className="user-profile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', cursor: 'pointer', borderRadius: 8, background: 'var(--bg-hover)', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }} onClick={() => navigate('/settings')}>
               <div className="user-avatar" style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', flexShrink: 0 }}>
@@ -177,6 +213,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
                 <div className="user-email" style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user?.email}</div>
                 <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                   <span style={{ fontSize: 9, padding: '2px 4px', borderRadius: 4, background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>Active</span>
+                  {user?.isPro && (
+                    <span style={{ fontSize: 9, padding: '2px 4px', borderRadius: 4, background: 'rgba(234, 179, 8, 0.2)', color: '#eab308', border: '1px solid rgba(234, 179, 8, 0.3)', fontWeight: 'bold' }}>PRO</span>
+                  )}
                   {user?.isTwoFactorEnabled ? (
                     <span style={{ fontSize: 9, padding: '2px 4px', borderRadius: 4, background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)' }}>2FA On</span>
                   ) : (
@@ -190,6 +229,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenMemory, onOpen
             </button>
           </div>
       </div>
+      
+      <UpgradeModal 
+        isOpen={isUpgradeModalOpen} 
+        onClose={() => setIsUpgradeModalOpen(false)} 
+      />
     </aside>
   );
 };

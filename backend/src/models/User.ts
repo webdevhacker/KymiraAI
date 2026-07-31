@@ -48,6 +48,12 @@ export interface IUser extends Document {
   // Active Sessions
   sessions: ISession[];
   
+  // Pro Subscription
+  isPro: boolean;
+  credits: number;
+  subscriptionId?: string;
+  subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'unpaid';
+  
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -96,6 +102,11 @@ const UserSchema = new Schema<IUser>(
     
     aiQuota: { type: Number, default: 100 },
     quotaResetAt: { type: Date, default: Date.now },
+
+    isPro: { type: Boolean, default: false },
+    credits: { type: Number, default: 0 },
+    subscriptionId: { type: String },
+    subscriptionStatus: { type: String, enum: ['active', 'cancelled', 'past_due', 'unpaid'] },
 
     sessions: [SessionSchema]
   },

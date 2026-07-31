@@ -18,6 +18,8 @@ export interface User {
   isTwoFactorEnabled?: boolean;
   aiQuota?: number;
   quotaResetAt?: string;
+  isPro?: boolean;
+  credits?: number;
 }
 
 export interface Memory {
@@ -84,7 +86,10 @@ export type ModelId =
   | 'openrouter/free'
   | 'nvidia/nemotron-3-ultra-550b-a55b:free'
   | 'cohere/north-mini-code:free'
-  | 'poolside/laguna-s-2.1:free';
+  | 'poolside/laguna-s-2.1:free'
+  | 'anthropic/claude-3.5-sonnet'
+  | 'anthropic/claude-3-opus'
+  | 'openai/gpt-4o';
 
 export interface ModelOption {
   id: ModelId;
@@ -117,6 +122,24 @@ export const MODELS: ModelOption[] = [
     name: 'Poolside Laguna S',
     description: 'This model is best for developers with highskilled AI agents',
     icon: '🌊',
+  },
+  {
+    id: 'anthropic/claude-3.5-sonnet',
+    name: 'Claude 3.5 Sonnet (Pro)',
+    description: 'Anthropic\'s smartest and fastest model for coding',
+    icon: '⚡',
+  },
+  {
+    id: 'anthropic/claude-3-opus',
+    name: 'Claude 3 Opus (Pro)',
+    description: 'Highly capable model for complex reasoning',
+    icon: '🧠',
+  },
+  {
+    id: 'openai/gpt-4o',
+    name: 'GPT-4o (Pro)',
+    description: 'OpenAI\'s fastest flagship model with advanced vision',
+    icon: '✨',
   },
 ];
 
