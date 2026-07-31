@@ -741,6 +741,8 @@ code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.875em
 /* ─── Empty State ────────────────────────────────────────────────────────────── */
 .empty-state {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
