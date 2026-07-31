@@ -21,7 +21,7 @@ const SettingsPage: React.FC = () => {
   // 2FA State
   const [qrCode, setQrCode] = useState('');
   const [twoFaCode, setTwoFaCode] = useState('');
-  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.isTwoFactorEnabled || false);
+  const is2FAEnabled = user?.isTwoFactorEnabled || false;
 
   // Delete Account State
   const [deleteStep, setDeleteStep] = useState<'idle' | 'verify'>('idle');
@@ -103,7 +103,6 @@ const SettingsPage: React.FC = () => {
     e.preventDefault();
     try {
       await userApi.verifyAndEnable2FA(twoFaCode);
-      setIs2FAEnabled(true);
       if (user) updateUser({ ...user, isTwoFactorEnabled: true });
       toast.success('2FA successfully enabled!');
       setQrCode('');
@@ -145,7 +144,6 @@ const SettingsPage: React.FC = () => {
     e.preventDefault();
     try {
       await userApi.disable2FA(twoFaCode);
-      setIs2FAEnabled(false);
       if (user) updateUser({ ...user, isTwoFactorEnabled: false });
       toast.success('2FA disabled successfully.');
       setTwoFaCode('');
