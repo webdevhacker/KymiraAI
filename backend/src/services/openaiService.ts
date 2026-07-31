@@ -89,8 +89,8 @@ IMPORTANT: At the end of every response, you MUST ask a relevant follow-up quest
       messages: msgs,
       tools: enableWebSearch ? tools : [tools[1]],
       stream: true,
-      include_reasoning: true,
-    } as any);
+      ...({ include_reasoning: true } as any)
+    });
 
     let toolCalls: any[] = [];
 
