@@ -92,8 +92,20 @@ IMPORTANT: At the end of every response, you MUST ask a relevant follow-up quest
       include_reasoning: true,
     } as unknown as OpenAI.ChatCompletionCreateParamsStreaming;
 
-    const stream = await openai.chat.completions.create(requestPayload);
-
+    let stream;
+    try {
+      stream = await openai.chat.completions.create(requestPayload);
+    } catch (err: any) {
+      if (err.status === 404 && err.message?.toLowerCase().includes('image')) {
+        requestPayload.model = 'openrouter/auto';
+        stream = await openai.chat.completions.create(requestPayload);
+        const notice = '*(Automatically switched to a vision-capable model to analyze your image)*\n\n';
+        fullContent += notice;
+        send({ type: 'content', content: notice });
+      } else {
+        throw err;
+      }
+    }
     let toolCalls: any[] = [];
 
     for await (const chunk of stream) {

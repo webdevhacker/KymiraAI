@@ -60,6 +60,16 @@ const InputBar: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const pastedFile = e.clipboardData.files?.[0];
+    if (pastedFile && pastedFile.type.startsWith('image/')) {
+      setFile(pastedFile);
+      const reader = new FileReader();
+      reader.onload = (ev) => setFilePreview(ev.target?.result as string);
+      reader.readAsDataURL(pastedFile);
+    }
+  };
+
   const handleSend = useCallback(async () => {
     const msg = text.trim();
     if ((!msg && !file) || isStreaming) return;
@@ -170,6 +180,7 @@ const InputBar: React.FC = () => {
           value={text}
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           placeholder={
             isQuotaReached
               ? 'Hourly limit reached. Please wait.'
