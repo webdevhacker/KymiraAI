@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check, Download, ExternalLink } from 'lucide-react';
@@ -119,6 +120,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               ) : (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
                   components={{
                     code({ className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || '');
@@ -153,6 +155,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                         <code className={className} {...props}>
                           {children}
                         </code>
+                      );
+                    },
+                    img({ src, alt, ...props }) {
+                      return (
+                        <div style={{ marginTop: '12px', marginBottom: '12px' }}>
+                          <img
+                            src={src}
+                            alt={alt}
+                            style={{ maxWidth: '100%', borderRadius: '8px', display: 'block' }}
+                            {...(props as any)}
+                          />
+                          {alt && <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px', textAlign: 'center' }}>{alt}</div>}
+                        </div>
                       );
                     },
                   }}
